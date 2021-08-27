@@ -1,19 +1,5 @@
-import Header from "./components/Header";
+import { AppHeader } from "./components/AppHeader";
+import { CalcButton } from "./components/CalcButton";
+import { AmountInput } from "./components/AmountInput";
 
-const App = () => {
-  const template = document.createElement("template");
-  template.innerHTML = `
-    <div class="container">
-      ${Header()}
-    </div>
-  `;
-  // Return a new node from template
-  return template.content.cloneNode(true);
-};
-
-const initApp = () => {
-  document.querySelector("#app").appendChild(App());
-};
-
-// Load app
-initApp();
+export { CalcButton, AppHeader, AmountInput };

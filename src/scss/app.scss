@@ -1,16 +1,17 @@
 @import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap");
-@import "./button";
 
-$primary-color: hsl(172, 67%, 45%);
-$white: hsl(0, 0%, 100%);
-$lightgray-cyan: hsl(185, 41%, 84%);
-$lightgrey-cyan-alt: hsl(189, 41%, 97%);
-$darkgrey-cyan: hsl(186, 14%, 43%);
-$darkgrey-cyan-alt: hsl(184, 14%, 56%);
-$dark-cyan: hsl(183, 100%, 15%);
-$font: "Space Mono", monospace;
+:root {
+  --primary-color: hsl(172, 67%, 45%);
+  --white: hsl(0, 0%, 100%);
+  --lightgray-cyan: hsl(185, 41%, 84%);
+  --lightgrey-cyan-alt: hsl(189, 41%, 97%);
+  --darkgrey-cyan: hsl(186, 14%, 43%);
+  --darkgrey-cyan-alt: hsl(184, 14%, 56%);
+  --dark-cyan: hsl(183, 100%, 15%);
+  --font: "Space Mono", monospace;
+}
 
 body {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 24px;
 }

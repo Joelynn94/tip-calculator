@@ -18,14 +18,24 @@
       >. Coded by <a href="#">Your Name Here</a>.
     </div>
 
+    <app-header></app-header>
+    <amount-input
+      error-message="This field is required ❗"
+      label="Custom Field"
+      type="text"
+    ></amount-input>
+    <calc-button data-value="5" class="btn">5%</calc-button>
+    <calc-button data-value="10">10%</calc-button>
+    <calc-button data-value="15">15%</calc-button>
+    <calc-button data-value="25">25%</calc-button>
+    <calc-button data-value="50">50%</calc-button>
+
     <noscript>
       <strong
         >We're sorry but this application doesn't work properly without
         JavaScript enabled. Please enable it to continue.
       </strong>
     </noscript>
-    <div id="app"></div>
-
     <script src="../src/app.js"></script>
   </body>
 </html>
