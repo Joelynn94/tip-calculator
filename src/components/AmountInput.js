@@ -1,10 +1,47 @@
 import { getBillAmount } from "../app";
+import icon from "../../public/images/icon-dollar.svg";
 
 const template = document.createElement("template");
 
 const styles = /*css*/ `
   .jl_form-field {
-    width: 100%
+    display: block;
+    position: relative;
+  }
+
+  .jl-input__input {
+    display: block;
+    position: relative;
+    text-align: right;
+    padding: 1rem;
+    width: 100%;
+    font-size: 1rem;
+    font-weight: 700;
+    border: 1px solid transparent;
+    color: var(--dark-cyan);
+    background-color: var(--lightgrey-cyan-alt);
+    border-radius: 0.25rem;
+    caret-color: var(--dark-cyan);
+    -webkit-transition: all 0.2s linear;
+    transition: all 0.2s linear;
+  }
+
+  .jl-input__input::placeholder {
+    color: var(--dark-cyan);
+    opacity: .35
+  }
+  
+  .jl-input__input::-ms-input-placeholder {
+    color: var(--dark-cyan);
+    opacity: .35
+  }
+
+  .jl-input__icon {
+    position: absolute;
+    left: 1.5rem;
+    bottom: 11%;
+    transform: translateY(-50%);
+    z-index: 10;
   }
 
   .error {
@@ -23,7 +60,8 @@ template.innerHTML = `
 </style>
 <div class="jl_form-field">
   <label class="jl-input__label"></label>
-  <input class="jl-input__input" type="text" />
+  <img src=${icon} alt="dollar icon" class="jl-input__icon hidden" />
+  <input class="jl-input__input" />
   <span class="error hidden">This field is required!</span>
 </div>`;
 
@@ -37,6 +75,7 @@ export class AmountInput extends HTMLElement {
     // select elements from the template
     this.$label = shadow.querySelector(".jl-input__label");
     this.$input = shadow.querySelector(".jl-input__input");
+    this.$icon = shadow.querySelector(".jl-input__icon");
     this.$error = shadow.querySelector(".error");
   }
 
@@ -46,6 +85,7 @@ export class AmountInput extends HTMLElement {
       "value",
       "label",
       "type",
+      "icon",
       "placeholder",
       "error-message",
       "invalid",
@@ -76,6 +116,22 @@ export class AmountInput extends HTMLElement {
     this.setAttribute("value", Number(newValue).toFixed(2));
   }
 
+  get min() {
+    return this.getAttribute("min");
+  }
+
+  get max() {
+    return this.getAttribute("max");
+  }
+
+  set min(newValue) {
+    this.setAttribute("min", newValue);
+  }
+
+  set max(newValue) {
+    this.setAttribute("max", newValue);
+  }
+
   // runs each time the element is added to the DOM
   connectedCallback() {
     // check if the input is on the DOM
@@ -87,14 +143,18 @@ export class AmountInput extends HTMLElement {
           this.$error.textContent = "This field is required.";
         } else {
           this.invalid = false;
-          this.value = Number(event.target.value).toFixed(2);
-          this.$input.value = this.value;
+          if (event.target.value !== "") {
+            this.value = Number(event.target.value).toFixed(2);
+            this.$input.value = this.value;
+          }
         }
       });
 
       this.$input.addEventListener("input", (event) => {
-        this.value = Number(event.target.value).toFixed(2);
-        getBillAmount(this, "input");
+        if (event.target.value !== "") {
+          this.value = Number(event.target.value).toFixed(2);
+          getBillAmount(this, "input");
+        }
       });
     }
   }
@@ -108,6 +168,12 @@ export class AmountInput extends HTMLElement {
       case "type":
         this.$input.type = newValue;
         break;
+      case "placeholder":
+        this.$input.placeholder = newValue;
+        break;
+      case "icon":
+        this._handleIcon(newValue);
+        break;
       case "error-message":
         this.$error.textContent = newValue;
         break;
@@ -116,6 +182,14 @@ export class AmountInput extends HTMLElement {
         break;
       default:
         break;
+    }
+  }
+
+  _handleIcon(icon) {
+    if (icon !== null) {
+      this.$icon.classList.remove("hidden");
+    } else {
+      this.$icon.classList("hidden");
     }
   }
 

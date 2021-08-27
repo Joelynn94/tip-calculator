@@ -18,18 +18,22 @@
       >. Coded by <a href="#">Your Name Here</a>.
     </div>
 
-    <app-header></app-header>
-    <amount-input
-      error-message="This field is required ❗"
-      label="Custom Field"
-      type="number"
-      placeholder="0.00"
-    ></amount-input>
-    <calc-button data-value="5" class="btn">5%</calc-button>
-    <calc-button data-value="10">10%</calc-button>
-    <calc-button data-value="15">15%</calc-button>
-    <calc-button data-value="25">25%</calc-button>
-    <calc-button data-value="50">50%</calc-button>
+    <div class="ui-container">
+      <app-header></app-header>
+      <amount-input
+        error-message="This field is required ❗"
+        label="Custom Field"
+        type="number"
+        placeholder="0.00"
+        min="1"
+        icon="./images/icon-dollar.svg"
+      ></amount-input>
+      <calc-button data-value="5" class="btn">5%</calc-button>
+      <calc-button data-value="10">10%</calc-button>
+      <calc-button data-value="15">15%</calc-button>
+      <calc-button data-value="25">25%</calc-button>
+      <calc-button data-value="50">50%</calc-button>
+    </div>
 
     <noscript>
       <strong
