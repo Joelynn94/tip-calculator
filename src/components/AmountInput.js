@@ -1,3 +1,5 @@
+import { getBillAmount } from "../app";
+
 const template = document.createElement("template");
 
 const styles = /*css*/ `
@@ -40,7 +42,14 @@ export class AmountInput extends HTMLElement {
 
   // set attributes to track on the the custom element
   static get observedAttributes() {
-    return ["value", "label", "type", "error-message", "invalid"];
+    return [
+      "value",
+      "label",
+      "type",
+      "placeholder",
+      "error-message",
+      "invalid",
+    ];
   }
 
   // check for invalid attribute
@@ -64,7 +73,7 @@ export class AmountInput extends HTMLElement {
 
   // set the new value on the value attribute
   set value(newValue) {
-    this.setAttribute("value", newValue);
+    this.setAttribute("value", Number(newValue).toFixed(2));
   }
 
   // runs each time the element is added to the DOM
@@ -78,8 +87,14 @@ export class AmountInput extends HTMLElement {
           this.$error.textContent = "This field is required.";
         } else {
           this.invalid = false;
-          this.value = event.target.value;
+          this.value = Number(event.target.value).toFixed(2);
+          this.$input.value = this.value;
         }
+      });
+
+      this.$input.addEventListener("input", (event) => {
+        this.value = Number(event.target.value).toFixed(2);
+        getBillAmount(this, "input");
       });
     }
   }

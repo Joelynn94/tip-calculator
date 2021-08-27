@@ -1,3 +1,5 @@
+import { getTipPercentage } from "../app";
+
 export class CalcButton extends HTMLElement {
   constructor() {
     // Always call super first in constructor
@@ -24,8 +26,7 @@ export class CalcButton extends HTMLElement {
     `;
 
     this.addEventListener("click", () => {
-      buttonValue++;
-      console.log(buttonValue);
+      getTipPercentage(this, "button");
     });
 
     shadow.appendChild(style);
