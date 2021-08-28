@@ -1,5 +1,6 @@
 import { getBillAmount } from "../app";
-import icon from "../../public/images/icon-dollar.svg";
+import dollarIcon from "../../public/images/icon-dollar.svg";
+import personIcon from "../../public/images/icon-person.svg";
 
 const template = document.createElement("template");
 
@@ -10,6 +11,7 @@ const styles = /*css*/ `
   }
 
   .jl-input__input {
+    box-sizing: border-box;
     display: block;
     position: relative;
     text-align: right;
@@ -17,7 +19,11 @@ const styles = /*css*/ `
     width: 100%;
     font-size: 1rem;
     font-weight: 700;
-    border: 1px solid transparent;
+    border: none;
+    -webkit-appearance: textfield;
+    -moz-appearance: textfield;
+    appearance: textfield;
+    border: 2px solid transparent;
     color: var(--dark-cyan);
     background-color: var(--lightgrey-cyan-alt);
     border-radius: 0.25rem;
@@ -36,17 +42,34 @@ const styles = /*css*/ `
     opacity: .35
   }
 
+  .jl-input__input:focus {
+    outline: none;
+    border : 2px solid var(--primary-color)
+  }
+  .jl-input__input:focus-within {
+    outline: none;
+    border : 2px solid var(--primary-color)
+  }
+
   .jl-input__icon {
     position: absolute;
     left: 1.5rem;
-    bottom: 11%;
+    bottom: 19%;
     transform: translateY(-50%);
     z-index: 10;
   }
 
   .error {
+    position: absolute;
+    top: -35px;
+    right: 0;
     color: red;
     display: block;
+    font-size: 16px;
+  }
+
+  .invalid-field {
+    border: 2px solid var(--error)
   }
 
   .hidden {
@@ -55,15 +78,14 @@ const styles = /*css*/ `
 `;
 
 template.innerHTML = `
-<style>
-  ${styles}
-</style>
-<div class="jl_form-field">
-  <label class="jl-input__label"></label>
-  <img src=${icon} alt="dollar icon" class="jl-input__icon hidden" />
-  <input class="jl-input__input" />
-  <span class="error hidden">This field is required!</span>
-</div>`;
+  <style>
+    ${styles}
+  </style>
+  <div class="jl_form-field">
+    <input class="jl-input__input" />
+    <img src="" alt="" class="jl-input__icon hidden" />
+    <small class="error hidden"></small>
+  </div>`;
 
 export class AmountInput extends HTMLElement {
   constructor() {
@@ -73,7 +95,6 @@ export class AmountInput extends HTMLElement {
     shadow.appendChild(template.content.cloneNode(true));
 
     // select elements from the template
-    this.$label = shadow.querySelector(".jl-input__label");
     this.$input = shadow.querySelector(".jl-input__input");
     this.$icon = shadow.querySelector(".jl-input__icon");
     this.$error = shadow.querySelector(".error");
@@ -83,9 +104,9 @@ export class AmountInput extends HTMLElement {
   static get observedAttributes() {
     return [
       "value",
-      "label",
       "type",
       "icon",
+      "aria-label",
       "placeholder",
       "error-message",
       "invalid",
@@ -106,9 +127,21 @@ export class AmountInput extends HTMLElement {
     }
   }
 
+  get name() {
+    return this.getAttribute("name");
+  }
+
   // get value attribute
   get value() {
     return this.getAttribute("value");
+  }
+
+  get min() {
+    return this.getAttribute("min");
+  }
+
+  set name(newValue) {
+    this.setAttribute("name", newValue);
   }
 
   // set the new value on the value attribute
@@ -116,20 +149,8 @@ export class AmountInput extends HTMLElement {
     this.setAttribute("value", Number(newValue).toFixed(2));
   }
 
-  get min() {
-    return this.getAttribute("min");
-  }
-
-  get max() {
-    return this.getAttribute("max");
-  }
-
   set min(newValue) {
     this.setAttribute("min", newValue);
-  }
-
-  set max(newValue) {
-    this.setAttribute("max", newValue);
   }
 
   // runs each time the element is added to the DOM
@@ -142,8 +163,8 @@ export class AmountInput extends HTMLElement {
           this.invalid = true;
           this.$error.textContent = "This field is required.";
         } else {
-          this.invalid = false;
           if (event.target.value !== "") {
+            this.invalid = false;
             this.value = Number(event.target.value).toFixed(2);
             this.$input.value = this.value;
           }
@@ -159,17 +180,41 @@ export class AmountInput extends HTMLElement {
     }
   }
 
+  _handleIcon(icon) {
+    if (icon !== null) {
+      this.$icon.classList.remove("hidden");
+      if (icon === "dollar") {
+        this.$icon.src = dollarIcon;
+      } else {
+        this.$icon.src = personIcon;
+      }
+    } else {
+      this.$icon.classList("hidden");
+    }
+  }
+
+  // check if the input has a valid value
+  _handleInvalidState(value) {
+    if (value !== null || value !== "" || this.hasAttribute("invalid")) {
+      this.$error.classList.remove("hidden");
+      this.$input.classList.add("invalid-field");
+    } else {
+      this.$error.classList.add("hidden");
+      this.$input.classList.remove("invalid-field");
+    }
+  }
+
   // callback to fire when an attribute changes
   attributeChangedCallback(attr, oldValue, newValue) {
     switch (attr) {
-      case "label":
-        this.$label.textContent = `${newValue}:`;
-        break;
       case "type":
         this.$input.type = newValue;
         break;
       case "placeholder":
         this.$input.placeholder = newValue;
+        break;
+      case "aria-label":
+        this.$input.ariaLabel = newValue;
         break;
       case "icon":
         this._handleIcon(newValue);
@@ -184,26 +229,7 @@ export class AmountInput extends HTMLElement {
         break;
     }
   }
-
-  _handleIcon(icon) {
-    if (icon !== null) {
-      this.$icon.classList.remove("hidden");
-    } else {
-      this.$icon.classList("hidden");
-    }
-  }
-
-  // check if the input has a valid value
-  _handleInvalidState(value) {
-    if (value !== null || value !== "") {
-      this.$error.classList.remove("hidden");
-      this.$input.classList.add("invalid-field");
-    } else {
-      this.$error.classList.add("hidden");
-      this.$input.classList.remove("invalid-field");
-    }
-  }
 }
 
 // Define the new element
-customElements.define("amount-input", AmountInput);
+window.customElements.define("amount-input", AmountInput);
